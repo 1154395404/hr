@@ -1,3 +1,4 @@
+/*
 import router from './router'
 import store from './store'
 import { Message } from 'element-ui'
@@ -45,7 +46,7 @@ router.beforeEach(async(to, from, next) => {
       }
     }
   } else {
-    /* has no token*/
+    /!* has no token*!/
 
     if (whiteList.indexOf(to.path) !== -1) {
       // in the free login whitelist, go directly
@@ -61,4 +62,36 @@ router.beforeEach(async(to, from, next) => {
 router.afterEach(() => {
   // finish progress bar
   NProgress.done()
+})
+*/
+import router from "@/router"
+import store from "@/store"
+import nprogress from 'nprogress'
+import 'nprogress/nprogress.css';
+
+const whiteList = ['/login', '/404'];// * 设置守卫白名单
+/*
+ next()放过
+  next（false） 跳转终止
+  next（地址） 跳转某个地址
+ */
+router.beforeEach((to, from, next) => {
+  nprogress.start();
+  if (store.getters.token) {// * 如果有token
+    if (to.path === '/login') {// * 如果跳转的路径为 login 就跳转首页
+      next('/')
+    } else {// * 否则 直接放行
+      next();
+    }
+  } else {// * 如果没有token
+    if (whiteList.includes(to.path)) {// * 如果在白名单直接放行
+      next();
+    } else {
+      next('/login');
+    }
+  }
+  nprogress.done();
+})
+router.afterEach(() => {
+
 })
